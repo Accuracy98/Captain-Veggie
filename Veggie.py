@@ -1,21 +1,21 @@
 from FieldInhabitant import FieldInhabitant
 
 class Veggie(FieldInhabitant):
-    def __init__(self, symbol: str, value) -> None:
-        self._value = value
+    def __init__(self, symbol: str, name, points) -> None:
+        self._name = name
+        self._points = points
         super().__init__(symbol)
-    
-    def getSymbol(self) -> str:
-        return super().getSymbol()
+    def getName(self):
+        return self._name
 
-    def getValue(self):
-        return self._value
+    def setName(self, name):
+        self._name = name
 
-    def setSymbol(self, symbol):
-        self._symbol = symbol
+    def getPoints(self):
+        return self._points
 
-    def setValue(self, value):
-        self._value = value
+    def setPoints(self, points):
+        self._points = points
 
     def  __str__(self) -> str:
         return super().__str__()
