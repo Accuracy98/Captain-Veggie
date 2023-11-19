@@ -1,3 +1,6 @@
+import csv
+import random
+
 class GameEngine:
     def __init__(self) -> None:
         self.__NUMBEROFVEGGIES = 30
@@ -10,7 +13,16 @@ class GameEngine:
         self.__score = 0
 
     def initVeggies(self):
-        ...
+        while True:
+            file_name = input("Please enter the name of the vegetable point file: ")
+            try:
+                with open(file_name,"r") as file:
+                    reader = csv.reader(file)
+                    file_size = next(reader)
+                    width, height = int(file_size[1]), int(file_size[2])
+                    self.__field = [[None for _ in range(width)] for _ in range(height)]
+            except FileNotFoundError:
+                print(f"{file_name} does not exist!")
 
     def initCaption(self):
         ...
@@ -52,3 +64,5 @@ class GameEngine:
 
     def highScore(self):
         ...
+if __name__ == "__main__":
+    GameEngine()
