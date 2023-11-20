@@ -82,7 +82,7 @@ class GameEngine:
     def moveRabbits(self):
         height = len(self.__field)
         width = len(self.__field[0])
-        derections = [
+        directions = [
             (-1, -1),
             (-1, 0),
             (-1, 1),
@@ -96,7 +96,7 @@ class GameEngine:
         for rabbit in self.__rabbits:
             x = rabbit.getX()
             y = rabbit.getY()
-            dx, dy = random.choice(derections)
+            dx, dy = random.choice(directions)
             new_x, new_y = x + dx, y + dy
 
             if 0 <= new_x < width and 0 <= new_y < height:
@@ -153,31 +153,31 @@ class GameEngine:
     def moveCaptain(self):
         if self.__captain is None:
             return
-        derections = input(
+        directions = input(
             "Would you like to move up(W), down(S), left(A), or right(D):"
         ).lower()
-        if derections == "w":
+        if directions == "w":
             if self.__captain.getY() > 0:
                 self.moveCptVertical(-1)
             else:
                 print("Can not move")
-        elif derections == "s":
+        elif directions == "s":
             if self.__captain.getY() < len(self.__field) - 1:
                 self.moveCptVertical(1)
             else:
                 print("Can not move")
-        elif derections == "a":
+        elif directions == "a":
             if self.__captain.getX() > 0:
                 self.moveCptHorizontal(-1)
             else:
                 print("Can not move")
-        elif derections == "d":
+        elif directions == "d":
             if self.__captain.getX() < len(self.__field[0]) - 1:
                 self.moveCptHorizontal(1)
             else:
                 print("Can not move")
         else:
-            print(f"{derections} is not a valid option")
+            print(f"{directions} is not a valid option")
 
     def gameOver(self):
         ...
