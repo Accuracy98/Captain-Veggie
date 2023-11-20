@@ -40,7 +40,7 @@ class GameEngine:
             except FileNotFoundError:
                 print(f"{file_name} does not exist!")
 
-    def initCaption(self):
+    def initCaptain(self):
         height = len(self.__field)
         width = len(self.__field[0])
         while True:
@@ -64,7 +64,7 @@ class GameEngine:
 
     def initializeGame(self):
         self.initVeggies()
-        self.initCaption()
+        self.initCaptain()
         self.initRabbits()
 
     def remainingVeggies(self):
@@ -96,19 +96,22 @@ class GameEngine:
         for rabbit in self.__rabbits:
             x = rabbit.getX()
             y = rabbit.getY()
-            dx,dy = random.choice(derections)
+            dx, dy = random.choice(derections)
             new_x, new_y = x + dx, y + dy
 
             if 0 <= new_x < width and 0 <= new_y < height:
-                if self.__field[new_x][new_y] is None or isinstance(self.__field[new_x][new_y], Veggie):
+                if self.__field[new_x][new_y] is None or isinstance(
+                    self.__field[new_x][new_y], Veggie
+                ):
                     self.__field[x][y] = None
                     rabbit.setX(new_x)
                     rabbit.setY(new_y)
                     self.__field[new_x][new_y] = rabbit
 
-
     def moveCptVertical(self, movement):
         height = len(self.__field)
+        if self.__captain is None:
+            return
         new_y = self.__captain.getY() + movement
         if 0 <= new_y < height:
             new_position = self.__field[self.__captain.getX()][new_y]
@@ -117,18 +120,19 @@ class GameEngine:
                 self.__captain.addVeggie(new_position)
                 self.__score += 1
                 self.__field[self.__captain.getX()][self.__captain.getY()] = None
-                self.__captain.setY(new_y) 
+                self.__captain.setY(new_y)
                 self.__field[self.__captain.getX()][new_y] = self.__captain
             elif isinstance(new_position, Rabbit):
                 return
             elif new_position is None:
                 self.__field[self.__captain.getX()][self.__captain.getY()] = None
-                self.__captain.setY(new_y) 
+                self.__captain.setY(new_y)
                 self.__field[self.__captain.getX()][new_y] = self.__captain
-
 
     def moveCptHorizontal(self, movement):
         width = len(self.__field[0])
+        if self.__captain is None:
+            return
         new_x = self.__captain.getX() + movement
         if 0 <= new_x < width:
             new_position = self.__field[new_x][self.__captain.getY()]
@@ -137,7 +141,7 @@ class GameEngine:
                 self.__captain.addVeggie(new_position)
                 self.__score += 1
                 self.__field[self.__captain.getX()][self.__captain.getY()] = None
-                self.__captain.setX(new_x) 
+                self.__captain.setX(new_x)
                 self.__field[new_x][self.__captain.getY()] = self.__captain
             elif isinstance(new_position, Rabbit):
                 return
@@ -147,23 +151,27 @@ class GameEngine:
                 self.__field[new_x][self.__captain.getY()] = self.__captain
 
     def moveCaptain(self):
-        derections = input("Would you like to move up(W), down(S), left(A), or right(D):").lower()
-        if derections == "w" :
+        if self.__captain is None:
+            return
+        derections = input(
+            "Would you like to move up(W), down(S), left(A), or right(D):"
+        ).lower()
+        if derections == "w":
             if self.__captain.getY() > 0:
                 self.moveCptVertical(-1)
             else:
                 print("Can not move")
-        elif derections =='s':
+        elif derections == "s":
             if self.__captain.getY() < len(self.__field) - 1:
                 self.moveCptVertical(1)
             else:
                 print("Can not move")
-        elif derections == 'a':
+        elif derections == "a":
             if self.__captain.getX() > 0:
                 self.moveCptHorizontal(-1)
             else:
                 print("Can not move")
-        elif derections == 'd':
+        elif derections == "d":
             if self.__captain.getX() < len(self.__field[0]) - 1:
                 self.moveCptHorizontal(1)
             else:
@@ -181,7 +189,7 @@ class GameEngine:
 if __name__ == "__main__":
     game_engine = GameEngine()
     game_engine.initVeggies()
-    game_engine.initCaption()
+    game_engine.initCaptain()
     game_engine.initRabbits()
     game_engine.moveCaptain()
     game_engine.moveRabbits()
