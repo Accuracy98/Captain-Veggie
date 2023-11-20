@@ -108,47 +108,39 @@ class GameEngine:
                     rabbit.setY(new_y)
                     self.__field[new_x][new_y] = rabbit
 
-    def moveCptVertical(self, movement):
-        height = len(self.__field)
+    def __updateCptLocation(self, new_x, new_y):
         if self.__captain is None:
             return
-        new_y = self.__captain.getY() + movement
-        if 0 <= new_y < height:
-            new_position = self.__field[self.__captain.getX()][new_y]
-            if isinstance(new_position, Veggie):
-                print(f"A delicious {new_position.getName()} has been found")
-                self.__captain.addVeggie(new_position)
-                self.__score += 1
-                self.__field[self.__captain.getX()][self.__captain.getY()] = None
-                self.__captain.setY(new_y)
-                self.__field[self.__captain.getX()][new_y] = self.__captain
-            elif isinstance(new_position, Rabbit):
+        self.__field[self.__captain.getX()][self.__captain.getY()] = None
+        self.__captain.setX(new_x)
+        self.__captain.setY(new_y)
+        self.__field[new_x][new_y] = self.__captain
+
+    def __moveCpt(self, movement_x=0, movement_y=0):
+        if self.__captain is None:
+            return
+        height = len(self.__field)
+        width = len(self.__field[0])
+        new_x = self.__captain.getX() + movement_x
+        new_y = self.__captain.getY() + movement_y
+        if 0 <= new_y < height and 0 <= new_x < width:
+            entity = self.__field[new_x][new_y]
+            if isinstance(entity, Veggie):
+                print(f"Yummy! A delicious {entity.getName()}")
+                self.__captain.addVeggie(entity)
+                self.__score += entity.getPoints()
+                self.__updateCptLocation(new_x, new_y)
+            elif isinstance(entity, Rabbit):
+                print("Don't step on the bunnies!")
                 return
-            elif new_position is None:
-                self.__field[self.__captain.getX()][self.__captain.getY()] = None
-                self.__captain.setY(new_y)
-                self.__field[self.__captain.getX()][new_y] = self.__captain
+            elif entity is None:
+                self.__updateCptLocation(new_x, new_y)
+
+    def moveCptVertical(self, movement):
+        self.__moveCpt(movement_y=movement)
 
     def moveCptHorizontal(self, movement):
-        width = len(self.__field[0])
-        if self.__captain is None:
-            return
-        new_x = self.__captain.getX() + movement
-        if 0 <= new_x < width:
-            new_position = self.__field[new_x][self.__captain.getY()]
-            if isinstance(new_position, Veggie):
-                print(f"A delicious {new_position.getName()} has been found")
-                self.__captain.addVeggie(new_position)
-                self.__score += 1
-                self.__field[self.__captain.getX()][self.__captain.getY()] = None
-                self.__captain.setX(new_x)
-                self.__field[new_x][self.__captain.getY()] = self.__captain
-            elif isinstance(new_position, Rabbit):
-                return
-            elif new_position is None:
-                self.__field[self.__captain.getX()][self.__captain.getY()] = None
-                self.__captain.setX(new_x)
-                self.__field[new_x][self.__captain.getY()] = self.__captain
+        self.__moveCpt(movement_x=movement)
 
     def moveCaptain(self):
         if self.__captain is None:
@@ -160,22 +152,22 @@ class GameEngine:
             if self.__captain.getY() > 0:
                 self.moveCptVertical(-1)
             else:
-                print("Can not move")
+                print("You can't move that way!")
         elif directions == "s":
             if self.__captain.getY() < len(self.__field) - 1:
                 self.moveCptVertical(1)
             else:
-                print("Can not move")
+                print("You can't move that way!")
         elif directions == "a":
             if self.__captain.getX() > 0:
                 self.moveCptHorizontal(-1)
             else:
-                print("Can not move")
+                print("You can't move that way!")
         elif directions == "d":
             if self.__captain.getX() < len(self.__field[0]) - 1:
                 self.moveCptHorizontal(1)
             else:
-                print("Can not move")
+                print("You can't move that way!")
         else:
             print(f"{directions} is not a valid option")
 
