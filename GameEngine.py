@@ -1,7 +1,8 @@
 import csv
 import random
+import pickle
+import pathlib
 from Captain import Captain
-from Creature import Creature
 from Veggie import Veggie
 from FieldInhabitant import FieldInhabitant
 from Rabbit import Rabbit
@@ -18,7 +19,7 @@ class GameEngine:
         self.__vegetables: list[Veggie] = []
         self.__score = 0
 
-    def initVeggies(self):
+    def initVeggies(self) -> None:
         while True:
             file_name = input("Please enter the name of the vegetable point file: ")
             try:
@@ -40,7 +41,7 @@ class GameEngine:
             except FileNotFoundError:
                 print(f"{file_name} does not exist!")
 
-    def initCaptain(self):
+    def initCaptain(self) -> None:
         height = len(self.__field)
         width = len(self.__field[0])
         while True:
@@ -50,7 +51,7 @@ class GameEngine:
                 self.__field[x][y] = self.__captain
                 break
 
-    def initRabbits(self):
+    def initRabbits(self) -> None:
         height = len(self.__field)
         width = len(self.__field[0])
         for _ in range(self.__NUMBEROFRABBITS):
@@ -62,24 +63,51 @@ class GameEngine:
                     self.__field[x][y] = rabbit
                     break
 
-    def initializeGame(self):
+    def initializeGame(self) -> None:
         self.initVeggies()
         self.initCaptain()
         self.initRabbits()
 
-    def remainingVeggies(self):
-        ...
+    def remainingVeggies(self) -> int:
+        counter = 0
+        for row in self.__field:
+            for entity in row:
+                if isinstance(entity, Veggie):
+                    counter += 1
+        return counter
 
-    def intro(self):
-        ...
+    def intro(self) -> None:
+        print("Welcome to Captain Veggie!")
+        print("The rabbits have invaded your garden and you must harvest")
+        print("as many vegetables as possible before the rabbits eat them")
+        print("all! Each vegetable is worth a different number of points")
+        print("so go for the high score!")
+        print()
+        print("The vegetables are:")
+        for v in self.__vegetables:
+            print(v)
+        print()
+        print("Captain Veggie is V, and the rabbits are R's.")
+        print()
+        print("Good luck!")
 
-    def printField(self):
-        ...
+    def printField(self) -> None:
+        width = len(self.__field[0]) * 3 + 2
+        print("#" * width)
+        for row in self.__field:
+            print("#", end="")
+            for entity in row:
+                if entity is None:
+                    print("   ", end="")
+                else:
+                    print(f" {entity.getSymbol()} ", end="")
+            print("#")
+        print("#" * width)
 
-    def getScore(self):
-        ...
+    def getScore(self) -> int:
+        return self.__score
 
-    def moveRabbits(self):
+    def moveRabbits(self) -> None:
         height = len(self.__field)
         width = len(self.__field[0])
         directions = [
@@ -108,7 +136,7 @@ class GameEngine:
                     rabbit.setY(new_y)
                     self.__field[new_x][new_y] = rabbit
 
-    def __updateCptLocation(self, new_x, new_y):
+    def __updateCptLocation(self, new_x: int, new_y: int) -> None:
         if self.__captain is None:
             return
         self.__field[self.__captain.getX()][self.__captain.getY()] = None
@@ -116,7 +144,7 @@ class GameEngine:
         self.__captain.setY(new_y)
         self.__field[new_x][new_y] = self.__captain
 
-    def __moveCpt(self, movement_x=0, movement_y=0):
+    def __moveCpt(self, movement_x: int = 0, movement_y: int = 0) -> None:
         if self.__captain is None:
             return
         height = len(self.__field)
@@ -136,13 +164,13 @@ class GameEngine:
             elif entity is None:
                 self.__updateCptLocation(new_x, new_y)
 
-    def moveCptVertical(self, movement):
+    def moveCptVertical(self, movement: int) -> None:
         self.__moveCpt(movement_y=movement)
 
-    def moveCptHorizontal(self, movement):
+    def moveCptHorizontal(self, movement: int) -> None:
         self.__moveCpt(movement_x=movement)
 
-    def moveCaptain(self):
+    def moveCaptain(self) -> None:
         if self.__captain is None:
             return
         directions = input(
@@ -171,11 +199,35 @@ class GameEngine:
         else:
             print(f"{directions} is not a valid option")
 
-    def gameOver(self):
-        ...
+    def gameOver(self) -> None:
+        if self.__captain is None:
+            return
+        print("GAME OVER!")
+        print("You managed to harvest the following vegetables:")
+        for v in self.__captain.getVeggies():
+            print(v.getName())
+        print(f"Your score was: {self.__score}")
 
-    def highScore(self):
-        ...
+    def highScore(self) -> None:
+        history_scores: list[tuple[str, int]] = list()
+        if pathlib.Path(self.__HIGHSCOREFILE).exists():
+            with open(self.__HIGHSCOREFILE, "rb") as f:
+                history_scores = pickle.load(f)
+        name = input("Please enter your three initials to go on the scoreboard: ")
+        i = 0
+        for i in range(len(history_scores)):
+            if self.__score > history_scores[i][1]:
+                break
+        history_scores.insert(i, (name, self.__score))
+
+        print()
+        print("HIGH SCORES")
+        print("Name    Score")
+        for e in history_scores:
+            print(f"{e[0]}     {e[1]}")
+
+        with open(self.__HIGHSCOREFILE, "w+b") as f:
+            pickle.dump(history_scores, f)
 
 
 if __name__ == "__main__":
@@ -183,8 +235,14 @@ if __name__ == "__main__":
     game_engine.initVeggies()
     game_engine.initCaptain()
     game_engine.initRabbits()
+    game_engine.intro()
+    print(game_engine.remainingVeggies())
+    game_engine.printField()
     game_engine.moveCaptain()
     game_engine.moveRabbits()
     game_engine.moveCptVertical(1)
     game_engine.moveCptHorizontal(1)
     game_engine.moveCaptain()
+    print(game_engine.remainingVeggies())
+    game_engine.gameOver()
+    game_engine.highScore()
