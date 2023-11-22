@@ -272,7 +272,7 @@ class GameEngine:
             dx, dy = random.choice(directions)
             new_x, new_y = x + dx, y + dy
 
-            if 0 <= new_x < width and 0 <= new_y < height:
+            if 0 <= new_x < height and 0 <= new_y < width:
                 if self.__field[new_x][new_y] is None or isinstance(
                     self.__field[new_x][new_y], Veggie
                 ):
