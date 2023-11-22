@@ -92,6 +92,8 @@ class GameEngine:
         print("Good luck!")
 
     def printField(self) -> None:
+        print(self.__captain.getX())
+        print(self.__captain.getY())
         width = len(self.__field[0]) * 3 + 2
         print("#" * width)
         for row in self.__field:
@@ -151,7 +153,7 @@ class GameEngine:
         width = len(self.__field[0])
         new_x = self.__captain.getX() + movement_x
         new_y = self.__captain.getY() + movement_y
-        if 0 <= new_y < height and 0 <= new_x < width:
+        if 0 <= new_x < height and 0 <= new_y < width:
             entity = self.__field[new_x][new_y]
             if isinstance(entity, Veggie):
                 print(f"Yummy! A delicious {entity.getName()}")
@@ -163,12 +165,14 @@ class GameEngine:
                 return
             elif entity is None:
                 self.__updateCptLocation(new_x, new_y)
+        else:
+            print("You can't move that way!")
 
     def moveCptVertical(self, movement: int) -> None:
-        self.__moveCpt(movement_y=movement)
+        self.__moveCpt(movement_x=movement)
 
     def moveCptHorizontal(self, movement: int) -> None:
-        self.__moveCpt(movement_x=movement)
+        self.__moveCpt(movement_y=movement)
 
     def moveCaptain(self) -> None:
         if self.__captain is None:
@@ -177,25 +181,13 @@ class GameEngine:
             "Would you like to move up(W), down(S), left(A), or right(D):"
         ).lower()
         if directions == "w":
-            if self.__captain.getY() > 0:
-                self.moveCptVertical(-1)
-            else:
-                print("You can't move that way!")
+            self.moveCptVertical(-1)
         elif directions == "s":
-            if self.__captain.getY() < len(self.__field) - 1:
-                self.moveCptVertical(1)
-            else:
-                print("You can't move that way!")
+            self.moveCptVertical(1)
         elif directions == "a":
-            if self.__captain.getX() > 0:
-                self.moveCptHorizontal(-1)
-            else:
-                print("You can't move that way!")
+            self.moveCptHorizontal(-1)
         elif directions == "d":
-            if self.__captain.getX() < len(self.__field[0]) - 1:
-                self.moveCptHorizontal(1)
-            else:
-                print("You can't move that way!")
+            self.moveCptHorizontal(1)
         else:
             print(f"{directions} is not a valid option")
 
@@ -228,21 +220,3 @@ class GameEngine:
 
         with open(self.__HIGHSCOREFILE, "w+b") as f:
             pickle.dump(history_scores, f)
-
-
-if __name__ == "__main__":
-    game_engine = GameEngine()
-    game_engine.initVeggies()
-    game_engine.initCaptain()
-    game_engine.initRabbits()
-    game_engine.intro()
-    print(game_engine.remainingVeggies())
-    game_engine.printField()
-    game_engine.moveCaptain()
-    game_engine.moveRabbits()
-    game_engine.moveCptVertical(1)
-    game_engine.moveCptHorizontal(1)
-    game_engine.moveCaptain()
-    print(game_engine.remainingVeggies())
-    game_engine.gameOver()
-    game_engine.highScore()
