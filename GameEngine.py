@@ -105,14 +105,14 @@ class GameEngine:
                 with open(file_name, "r") as file:
                     reader = csv.reader(file)
                     file_size = next(reader)
-                    width, height = int(file_size[1]), int(file_size[2])
+                    height, width = int(file_size[1]), int(file_size[2])
                     self.__field = [[None for _ in range(width)] for _ in range(height)]
                     for line in reader:
                         self.__vegetables.append(Veggie(line[1], line[0], int(line[2])))
                     for _ in range(self.__NUMBEROFVEGGIES):
                         while True:
-                            x = random.randint(0, width - 1)
-                            y = random.randint(0, height - 1)
+                            y = random.randint(0, width - 1)
+                            x = random.randint(0, height - 1)
                             if self.__field[x][y] is None:
                                 self.__field[x][y] = random.choice(self.__vegetables)
                                 break
@@ -134,7 +134,7 @@ class GameEngine:
         height = len(self.__field)
         width = len(self.__field[0])
         while True:
-            x, y = random.randint(0, width - 1), random.randint(0, height - 1)
+            x, y = random.randint(0, height - 1), random.randint(0, width - 1)
             if self.__field[x][y] is None:
                 self.__captain = Captain(x, y)
                 self.__field[x][y] = self.__captain
@@ -154,7 +154,7 @@ class GameEngine:
         width = len(self.__field[0])
         for _ in range(self.__NUMBEROFRABBITS):
             while True:
-                x, y = random.randint(0, width - 1), random.randint(0, height - 1)
+                x, y = random.randint(0, height - 1), random.randint(0, width - 1)
                 if self.__field[x][y] is None:
                     rabbit = Rabbit(x, y)
                     self.__rabbits.append(rabbit)
