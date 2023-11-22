@@ -1,3 +1,7 @@
+# Author: ZhiCheng Yang, Zhekang Xu
+# Date: 2023-11-22
+# Description: Represents the game engine for a fictional game called "Captain Veggie."
+
 import csv
 import random
 import pickle
@@ -9,6 +13,66 @@ from Rabbit import Rabbit
 
 
 class GameEngine:
+    """
+    A class representing the game engine for Captain Veggie.
+
+    Attributes:
+    - __NUMBEROFVEGGIES (int): The number of vegetables in the game.
+    - __NUMBEROFRABBITS (int): The number of rabbits in the game.
+    - __HIGHSCOREFILE (str): The file name for storing high scores.
+    - __field (list[list[FieldInhabitant | None]]): A 2D list representing the game field.
+    - __rabbits (list[Rabbit]): A list of Rabbit objects in the game.
+    - __captain (Captain | None): The Captain object in the game.
+    - __vegetables (list[Veggie]): A list of Veggie objects in the game.
+    - __score (int): The current score of the game.
+
+    Methods:
+    - __init__(self) -> None:
+        Initializes a new GameEngine object.
+
+    - initVeggies(self) -> None:
+        Initializes the vegetables in the game.
+
+    - initCaptain(self) -> None:
+        Initializes the Captain in the game.
+
+    - initRabbits(self) -> None:
+        Initializes the rabbits in the game.
+
+    - initializeGame(self) -> None:
+        Initializes the entire game.
+
+    - remainingVeggies(self) -> int:
+        Returns the number of remaining vegetables in the game.
+
+    - intro(self) -> None:
+        Prints the game introduction.
+
+    - printField(self) -> None:
+        Prints the current state of the game field.
+
+    - getScore(self) -> int:
+        Returns the current score of the game.
+
+    - moveRabbits(self) -> None:
+        Moves the rabbits randomly on the game field.
+
+    - moveCptVertical(self, movement: int) -> None:
+        Moves the Captain vertically.
+
+    - moveCptHorizontal(self, movement: int) -> None:
+        Moves the Captain horizontally.
+
+    - moveCaptain(self) -> None:
+        Accepts user input to move the Captain.
+
+    - gameOver(self) -> None:
+        Prints the game over message with the final score.
+
+    - highScore(self) -> None:
+        Displays and updates the high scores.
+    """
+
     def __init__(self) -> None:
         self.__NUMBEROFVEGGIES = 30
         self.__NUMBEROFRABBITS = 5
@@ -20,6 +84,21 @@ class GameEngine:
         self.__score = 0
 
     def initVeggies(self) -> None:
+        """
+        Initializes the vegetables in the game.
+
+        The method prompts the user to enter the name of the vegetable point file, reads the
+        file to get the dimensions of the game field, populates the game field with vegetables,
+        and randomly places the specified number of vegetables on the field.
+
+        Raises:
+        - FileNotFoundError: If the specified file does not exist.
+
+        Note:
+        This method assumes that the vegetable point file is a CSV file with the following format:
+        - The first line contains the width and height of the game field.
+        - Each subsequent line contains the name, symbol, and points of a vegetable.
+        """
         while True:
             file_name = input("Please enter the name of the vegetable point file: ")
             try:
@@ -42,6 +121,16 @@ class GameEngine:
                 print(f"{file_name} does not exist!")
 
     def initCaptain(self) -> None:
+        """
+        Initializes the Captain in the game.
+
+        The method randomly selects coordinates on the game field and creates a Captain
+        object at those coordinates if the location is unoccupied.
+
+        Note:
+        The Captain is a unique entity, and this method ensures that it is placed on the
+        game field in an unoccupied location.
+        """
         height = len(self.__field)
         width = len(self.__field[0])
         while True:
@@ -52,6 +141,15 @@ class GameEngine:
                 break
 
     def initRabbits(self) -> None:
+        """
+        Initializes the rabbits in the game.
+
+        The method randomly selects coordinates on the game field and creates Rabbit objects
+        at those coordinates if the locations are unoccupied.
+
+        Note:
+        The number of rabbits to be initialized is determined by the __NUMBEROFRABBITS attribute.
+        """
         height = len(self.__field)
         width = len(self.__field[0])
         for _ in range(self.__NUMBEROFRABBITS):
@@ -64,11 +162,25 @@ class GameEngine:
                     break
 
     def initializeGame(self) -> None:
+        """
+        Initializes the entire game.
+
+        This method calls the initVeggies, initCaptain, and initRabbits methods to set up
+        the game environment with vegetables, the Captain, and rabbits.
+        """
         self.initVeggies()
         self.initCaptain()
         self.initRabbits()
 
     def remainingVeggies(self) -> int:
+        """
+        Returns the number of remaining vegetables in the game.
+
+        This method iterates over the game field and counts the number of remaining vegetables.
+
+        Returns:
+        - int: The number of remaining vegetables.
+        """
         counter = 0
         for row in self.__field:
             for entity in row:
@@ -77,6 +189,16 @@ class GameEngine:
         return counter
 
     def intro(self) -> None:
+        """
+        Prints the game introduction.
+
+        This method provides a brief welcome message to the game, explaining the objective
+        to harvest vegetables before the rabbits eat them. It displays information about the
+        point values of each vegetable and introduces Captain Veggie and the rabbits.
+
+        Note:
+        The vegetable information is retrieved from the __vegetables attribute.
+        """
         print("Welcome to Captain Veggie!")
         print("The rabbits have invaded your garden and you must harvest")
         print("as many vegetables as possible before the rabbits eat them")
@@ -92,8 +214,16 @@ class GameEngine:
         print("Good luck!")
 
     def printField(self) -> None:
-        print(self.__captain.getX())
-        print(self.__captain.getY())
+        """
+        Prints the current state of the game field.
+
+        This method displays the game field with its entities, including Captain Veggie,
+        rabbits, and vegetables. The entities are represented by symbols, and empty spaces
+        are denoted by three spaces. The entire field is enclosed by '#' characters.
+
+        Note:
+        The symbols for each entity are obtained using the getSymbol method.
+        """
         width = len(self.__field[0]) * 3 + 2
         print("#" * width)
         for row in self.__field:
@@ -107,9 +237,22 @@ class GameEngine:
         print("#" * width)
 
     def getScore(self) -> int:
+        """
+        Returns the current score of the game.
+
+        Returns:
+        - int: The current score of the game.
+        """
         return self.__score
 
     def moveRabbits(self) -> None:
+        """
+        Moves the rabbits randomly on the game field.
+
+        This method iterates over each rabbit in the game, randomly selects a direction
+        to move, and updates the rabbit's position on the game field. If the new position
+        is unoccupied or contains a vegetable, the rabbit moves; otherwise, it stays in place.
+        """
         height = len(self.__field)
         width = len(self.__field[0])
         directions = [
@@ -139,6 +282,16 @@ class GameEngine:
                     self.__field[new_x][new_y] = rabbit
 
     def __updateCptLocation(self, new_x: int, new_y: int) -> None:
+        """
+        Updates the Captain's location on the game field.
+
+        This private method is responsible for updating the Captain's position on the game field.
+        If the Captain is not initialized (None), the method does nothing.
+
+        Parameters:
+        - new_x (int): The new x-coordinate for the Captain.
+        - new_y (int): The new y-coordinate for the Captain.
+        """
         if self.__captain is None:
             return
         self.__field[self.__captain.getX()][self.__captain.getY()] = None
@@ -147,6 +300,20 @@ class GameEngine:
         self.__field[new_x][new_y] = self.__captain
 
     def __moveCpt(self, movement_x: int = 0, movement_y: int = 0) -> None:
+        """
+        Moves the Captain on the game field.
+
+        This private method calculates the new position for the Captain based on the provided
+        movement in the x and y directions. It checks if the new position is within the bounds
+        of the game field and updates the Captain's location accordingly. If the new position
+        is occupied by a vegetable, it adds the vegetable to the Captain's collection and updates
+        the score. If the new position is occupied by a rabbit, it prints a warning message.
+        If the new position is unoccupied, it updates the Captain's location.
+
+        Parameters:
+        - movement_x (int): The movement in the x-direction.
+        - movement_y (int): The movement in the y-direction.
+        """
         if self.__captain is None:
             return
         height = len(self.__field)
@@ -169,12 +336,39 @@ class GameEngine:
             print("You can't move that way!")
 
     def moveCptVertical(self, movement: int) -> None:
+        """
+        Moves the Captain vertically on the game field.
+
+        This method delegates the movement to the private __moveCpt method with the specified
+        vertical movement.
+
+        Parameters:
+        - movement (int): The vertical movement for the Captain.
+        """
         self.__moveCpt(movement_x=movement)
 
     def moveCptHorizontal(self, movement: int) -> None:
+        """
+        Moves the Captain horizontally on the game field.
+
+        This method delegates the movement to the private __moveCpt method with the specified
+        horizontal movement.
+
+        Parameters:
+        - movement (int): The horizontal movement for the Captain.
+        """
         self.__moveCpt(movement_y=movement)
 
     def moveCaptain(self) -> None:
+        """
+        Moves the Captain based on user input.
+
+        This method prompts the user to enter a direction (up, down, left, or right) and
+        moves the Captain accordingly by calling the appropriate move methods.
+
+        Note:
+        The method ignores invalid input and provides feedback to the user.
+        """
         if self.__captain is None:
             return
         directions = input(
@@ -192,6 +386,12 @@ class GameEngine:
             print(f"{directions} is not a valid option")
 
     def gameOver(self) -> None:
+        """
+        Prints the game-over message.
+
+        This method prints a message indicating that the game is over, along with the vegetables
+        harvested by the Captain and the final score.
+        """
         if self.__captain is None:
             return
         print("GAME OVER!")
@@ -201,6 +401,12 @@ class GameEngine:
         print(f"Your score was: {self.__score}")
 
     def highScore(self) -> None:
+        """
+        Records and displays the high scores.
+
+        This method records the player's score with their initials, updates the high scores file,
+        and displays the current high scores.
+        """
         history_scores: list[tuple[str, int]] = list()
         if pathlib.Path(self.__HIGHSCOREFILE).exists():
             with open(self.__HIGHSCOREFILE, "rb") as f:
