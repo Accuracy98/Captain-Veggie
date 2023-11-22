@@ -10,6 +10,8 @@ from Captain import Captain
 from Veggie import Veggie
 from FieldInhabitant import FieldInhabitant
 from Rabbit import Rabbit
+from Snake import Snake
+from Creature import Creature
 
 
 class GameEngine:
@@ -82,6 +84,17 @@ class GameEngine:
         self.__captain: Captain | None = None
         self.__vegetables: list[Veggie] = []
         self.__score = 0
+        self.__snake = None
+
+    def initSnake(self):
+        height = len(self.__field)
+        width = len(self.__field[0])
+        while True:
+            x, y = random.randint(0, height - 1), random.randint(0, width - 1)
+            if self.__field[x][y] is None:
+                self.__snake = Snake(x, y)
+                self.__field[x][y] = self.__snake
+                break
 
     def initVeggies(self) -> None:
         """
@@ -244,6 +257,39 @@ class GameEngine:
         - int: The current score of the game.
         """
         return self.__score
+
+    def moveSnake(self):
+        if self.__snake is None or self.__captain is None:
+            return
+        snake_x = self.__snake.getX()
+        snake_y = self.__snake.getY()
+        captain_x = self.__captain.getX()
+        captain_y = self.__captain.getY()
+        delta_x = captain_x - snake_x
+        delta_y = captain_y - snake_y
+        move_x, move_y = 0, 0
+        if abs(delta_x) > abs(delta_y):
+            if delta_x > 0:
+                move_x = 1
+            else:
+                move_x = -1
+        else:
+            if delta_y > 0:
+                move_y = 1
+            else:
+                move_y = -1
+        new_x = snake_x + move_x
+        new_y = snake_y + move_y
+
+        if 0 <= new_x < len(self.__field) and 0 <= new_y < len(self.__field[0]):
+            if isinstance(self.__field[new_x][new_y], Creature):
+                self.__field[snake_x][snake_y] = None
+                self.__snake.setX(new_x)
+                self.__snake.setY(new_y)
+                self.__field[new_x][new_y] = self.__snake
+            elif new_x == captain_x and new_y == captain_y:
+                self.initSnake()
+
 
     def moveRabbits(self) -> None:
         """
