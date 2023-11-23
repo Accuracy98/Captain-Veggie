@@ -317,6 +317,7 @@ class GameEngine:
                         target_y = potential_y
 
         if target_x == captain_x and target_y == captain_y:
+            print("Oops! you encountered a snake")
             self.__field[snake_x][snake_y] = None
             # Remove last five veggies
             lost_veggies = self.__captain.getVeggies()[-5:]
