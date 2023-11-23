@@ -10,6 +10,7 @@ def main():
     game_engine.initVeggies()
     game_engine.initCaptain()
     game_engine.initRabbits()
+    game_engine.initSnake()
     game_engine.intro()
     remaining_vegetables = game_engine.remainingVeggies()
     while remaining_vegetables != 0:
@@ -19,6 +20,7 @@ def main():
         game_engine.printField()
         game_engine.moveRabbits()
         game_engine.moveCaptain()
+        game_engine.moveSnake()
         remaining_vegetables = game_engine.remainingVeggies()
 
     game_engine.gameOver()
