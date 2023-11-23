@@ -265,30 +265,32 @@ class GameEngine:
         snake_y = self.__snake.getY()
         captain_x = self.__captain.getX()
         captain_y = self.__captain.getY()
-        delta_x = captain_x - snake_x
-        delta_y = captain_y - snake_y
-        move_x, move_y = 0, 0
-        if abs(delta_x) > abs(delta_y):
-            if delta_x > 0:
-                move_x = 1
-            else:
-                move_x = -1
-        else:
-            if delta_y > 0:
-                move_y = 1
-            else:
-                move_y = -1
+
+        move_x = 0
+        move_y = 0
+        if captain_x != snake_x:
+            move_x = 1 if captain_x > snake_x else -1
+        elif captain_y != snake_y:
+            move_y = 1 if captain_y > snake_y else -1
+
+
         new_x = snake_x + move_x
         new_y = snake_y + move_y
 
         if 0 <= new_x < len(self.__field) and 0 <= new_y < len(self.__field[0]):
-            if isinstance(self.__field[new_x][new_y], Creature):
+            if isinstance(self.__field[new_x][new_y], Veggie) or isinstance(self.__field[new_x][new_y], Rabbit):
+                return
+            elif new_x == captain_x and new_y == captain_y:
+                self.__field[snake_x][snake_y] = None
+
+                self.initSnake()
+                # add function that loses the last five vegetables
+
+            else:
                 self.__field[snake_x][snake_y] = None
                 self.__snake.setX(new_x)
                 self.__snake.setY(new_y)
                 self.__field[new_x][new_y] = self.__snake
-            elif new_x == captain_x and new_y == captain_y:
-                self.initSnake()
 
 
     def moveRabbits(self) -> None:
