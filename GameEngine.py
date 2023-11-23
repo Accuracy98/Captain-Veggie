@@ -298,6 +298,8 @@ class GameEngine:
 
         if target_x == captain_x and target_y == captain_y:
             self.__field[snake_x][snake_y] = None
+            # Remove last five veggies
+            self.__captain.setVeggies(self.__captain.getVeggies()[0:-5])
             self.initSnake()
         else:
             self.__field[snake_x][snake_y] = None
