@@ -87,6 +87,16 @@ class GameEngine:
         self.__snake = None
 
     def initSnake(self):
+        """
+        Initializes the snake in the game.
+
+        The method randomly selects coordinates on the game field and creates a Snake
+        object at those coordinates if the location is unoccupied.
+
+        Note:
+        The Snake is a unique entity, and this method ensures that it is placed on the
+        game field in an unoccupied location.
+        """
         height = len(self.__field)
         width = len(self.__field[0])
         while True:
@@ -259,6 +269,16 @@ class GameEngine:
         return self.__score
 
     def moveSnake(self):
+        """
+        Moves the snake towards the Captain.
+
+        This method calculates the best move for the snake to get closer to the Captain,
+        avoiding obstacles like rabbits and vegetables. If the snake reaches the Captain,
+        it triggers the logic for the Captain to lose vegetables and resets the snake's position.
+
+        Note:
+        The snake's movement is constrained to ensure it remains within the bounds of the field.
+        """
         if not self.__snake or not self.__captain:
             return
 
@@ -299,7 +319,12 @@ class GameEngine:
         if target_x == captain_x and target_y == captain_y:
             self.__field[snake_x][snake_y] = None
             # Remove last five veggies
+            lost_veggies = self.__captain.getVeggies()[-5:]
+            lost_points = 0
+            for veggie in lost_veggies:
+                lost_points += veggie.getPoints()
             self.__captain.setVeggies(self.__captain.getVeggies()[0:-5])
+            self.__score -= lost_points
             self.initSnake()
         else:
             self.__field[snake_x][snake_y] = None
